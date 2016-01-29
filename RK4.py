@@ -39,6 +39,8 @@ def model(state,t):
 #    k = 600
 
  #   return x*a*( 1 - x*k**-1 ) # corresponds to [dx/dt, dy/dt]
+ 
+ # initial conditions for the system
 #x0=200
 ##################
 
