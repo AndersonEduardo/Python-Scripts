@@ -39,8 +39,6 @@ def model(state,t):
 #    k = 600
 
  #   return x*a*( 1 - x*k**-1 ) # corresponds to [dx/dt, dy/dt]
- 
- # initial conditions for the system
 #x0=200
 ##################
 
@@ -49,7 +47,7 @@ x0 = 50.0
 y0 = 20.0
 
 # vector of time
-t = np.linspace( 0, 100, 100 )
+t = np.linspace( 0, 100, 1000 )
 
 result = meurk4( model, [x0,y0], t )
 print result

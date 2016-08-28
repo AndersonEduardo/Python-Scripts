@@ -10,7 +10,7 @@ def meueuler( f, x0, t ):
 
     return x
 
-def model(state,t):
+def model2(state,t):
     x = state     
     a = 2
     b = 0.02
@@ -24,7 +24,7 @@ x0=20
 
 t = np.linspace( 0, 100, 100000 )
 
-result = meueuler( model, x0, t )
+result = meueuler( model2, x0, t )
 print result
 
 plt.plot(t,result)

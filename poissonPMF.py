@@ -1,4 +1,3 @@
-#probability mass function for  Poisson distribuition
 def poissonPMF(a, b):
     poissonPMF = []
     mu = a
