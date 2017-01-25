@@ -1,5 +1,0 @@
-mymodel = nuismerModel(30,3,3,2,100,0.1,0.1,2,10)
-mymodel.run()
-
-pl.plot(mymodel.outputAnimal)
-pl.show()
