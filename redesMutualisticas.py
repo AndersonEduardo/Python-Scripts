@@ -14,7 +14,7 @@ class organisms(object):
 
 class environment(object):
     def __init__(self,N,Sanimal,Splants,offs,alpha,gamma,theta,carringCapacity):
-        self.population = [] #array de populacoes
+#        self.population = [] #array de populacoes
         self.abundancePlants = [] #variavel para armazenar info dos tamanhos populacionais em cada passo de tempo
         self.abundanceAnimal = [] #variavel para armazenar info dos tamanhos populacionais em cada passo de tempo
         self.plantsFenDataList = []
@@ -28,89 +28,69 @@ class environment(object):
         self.theta = theta
         self.carringCapacity = carringCapacity
 
-    def criatePop(self):
-        for group in ['A','P']: #loop sobre grupos animal e planta
-            if group == 'A':
-                for i in range(self.numSpAn): #loop sobre numero de especies
-                    for j in range(self.numInd): #loop sobre o numero de individuos
-#                        self.fenInitial = self.theta + np.random.uniform()
-#                        self.ind = organisms(group,i,self.fenInitial,self.offspring,1) #criando um organismo animal
-                        self.population.append(organisms('A',i,self.theta + np.random.uniform(),self.offspring,1)) #adicionando o novo organismo no final do array de organismos
-            else:
-                for i in range(self.numSpPlan): #loop sobre numero de especies
-                    for j in range(self.numInd): #loop sobre o numero de individuos
-                        self.fenInitial = self.theta + np.random.uniform()
-#                        self.ind = organisms(group,i,self.fenInitial,self.offspring,1) #criando um organismo planta
-                        self.population.append(organisms('P',i,self.theta + np.random.uniform(),self.offspring,1)) #adicionando o novo organismo no final do array de organismos
-#        rd.shuffle(self.population)
+    def criatePopAnimal(self):
+        for i in range(self.numSpAn): #loop sobre numero de especies
+            for j in range(self.numInd): #loop sobre o numero de individuos
+                self.population.append(organisms('A',i,self.theta + np.random.uniform(),self.offspring,0)) #add o novo organismo no final do array de organismos
 
-    def animalReproduction(self): #reproducao assexuada (depende apenas da interacao)
-        self.animalsPop = [x for x in self.population if x.group == 'A']
+    def criatePopPlants(self):
+        for i in range(self.numSpPlan): #loop sobre numero de especies
+            for j in range(self.numInd): #loop sobre o numero de individuos
+                self.population.append(organisms('P',i,self.theta + np.random.uniform(),self.offspring,0)) #add o novo organismo no final do array de organismos
+
+    def animalReproduction(self,popAni,popPlan): #reproducao assexuada (depende apenas da interacao)
+        self.animalsPop = popAni
+        self.plantsPop = popPlan
         for i in range(len(self.animalsPop)):
             if (self.animalsPop[i].age > 0):
-#                    self.indGroup = self.population[i].group #registrando o grupo do organismo atual (se animal ou planta)
-#                    self.intParGroup = [x for x in self.population if x.group != self.indGroup] #agrupando organismos do outro grupo para interaca
-                self.intParGroup = [x for x in self.population if x.group == 'P']
-                if len(self.intParGroup) == 0:
+                if len(self.plantsPop) == 0:
                     print "\n !!!The network collapsed!!! \n"
-                self.intPar = rd.randint(0,len(self.intParGroup)-1) #sorteando o parceiro de interacao
-                # self.Za = filter(lambda x: x.group=='A',[self.population[i],self.intParGroup[self.intPar]]) #definindo Za
-                # self.Zp = filter(lambda x: x.group=='P',[self.population[i],self.intParGroup[self.intPar]]) #definindo Za
+                #obtendo valor da funcao para prob. de interacao
                 self.Za = self.animalsPop[i].fen
-                self.Zp = self.intParGroup[self.intPar].fen
-
-                self.indIntProb = self.interaction(self.Za,self.Zp,self.alpha) #obtendo valor da funcao para prob. de interacao
+                self.Zp = self.plantsPop[rd.randint(0,len(self.plantsPop)-1)].fen
+                
+                self.indIntProb = self.interaction(self.Za,self.Zp,self.alpha) 
 
                 if self.indIntProb > np.random.uniform():
                     self.indFitness = self.fitness(self.animalsPop[i].fen,self.gamma,self.theta)
 
                     if self.indFitness > np.random.uniform():
-#                            self.indSp = self.animalsPop[i].sp
-#                            self.indFen = self.animalsPop[i].fen
-#                            self.ind = organisms('A',self.indSp,self.indFen+np.random.normal(0,1),self.offspring,0) #criando um novo organismo...
                         for i_Offsp in range(self.animalsPop[i].offspring): #add prole recursivamente para haver variabilidade em Fen.
                             self.population.extend([organisms('A',self.animalsPop[i].sp,self.animalsPop[i].fen+np.random.normal(0,1),self.offspring,0)]) #adicionando novos inds na populacao.
-#                            self.population.extend([self.ind]*self.animalsPop[i].offspring) #adicionando novos inds na populacao.
-                            #self.nind = len([x for x in self.populacao if x.group != self.indGroup]) #registrando o tamanho da populacao
 
-    def plantsReproduction(self): #reproducao assexuada (depende apenas da interacao)
-        self.plantsPop = [x for x in self.population if x.group == 'P']
+    def plantsReproduction(self,popPlan,popAni): #reproducao assexuada (depende apenas da interacao)
+        self.plantsPop = popPlan
+        self.animalsPop = popAni
         for i in range(len(self.plantsPop)):
             if (self.plantsPop[i].age > 0):
-#                    self.indGroup = self.population[i].group #registrando o grupo do organismo atual (se animal ou planta)
-#                    self.intParGroup = [x for x in self.population if x.group != self.indGroup] #agrupando organismos do outro grupo para interaca
-                self.intParGroup = [x for x in self.population if x.group == 'A']
-                if len(self.intParGroup) == 0:
+                if len(self.animalsPop) == 0:
                     print "\n !!!The network collapsed!!! \n"
-                self.intPar = rd.randint(0,len(self.intParGroup)-1) #sorteando o parceiro de interacao
-                # self.Za = filter(lambda x: x.group=='A',[self.population[i],self.intParGroup[self.intPar]]) #definindo Za
-                # self.Zp = filter(lambda x: x.group=='P',[self.population[i],self.intParGroup[self.intPar]]) #definindo Za
-                self.Za = self.intParGroup[self.intPar].fen
+                #obtendo valor da funcao para prob. de interacao
+                self.Za = self.animalsPop[rd.randint(0,len(self.animalsPop)-1)].fen
                 self.Zp = self.plantsPop[i].fen
 
-                self.indIntProb = self.interaction(self.Za,self.Zp,self.alpha) #obtendo valor da funcao para prob. de interacao
+                self.indIntProb = self.interaction(self.Za,self.Zp,self.alpha) 
 
                 if self.indIntProb > np.random.uniform():
                     self.indFitness = self.fitness(self.plantsPop[i].fen,self.gamma,self.theta)
 
                     if self.indFitness > np.random.uniform():
-#                            self.indSp = self.plantsPop[i].sp
-#                            self.indFen = self.plantsPop[i].fen
-#                            self.ind = organisms('P',self.indSp,self.indFen+np.random.normal(0,1),self.offspring,0) #criando um novo organismo...
                         for i_Offsp in range(self.plantsPop[i].offspring): #add prole recursivamente para haver variabilidade em Fen.
                             self.population.extend([organisms('P',self.plantsPop[i].sp,self.plantsPop[i].fen+np.random.normal(0,1),self.offspring,0)]) #adicionando novos inds na populacao.
 
-#                            self.population.extend([organisms('P',i,self.fenInitial,self.offspring,0),organisms('P',i,self.fenInitial,self.offspring,0)]) #adicionando novos inds na populacao.
-#                            self.population.extend([self.ind,self.ind]) #adicionando novos inds na populacao.
-#                            self.population.extend([self.ind]*self.plantsPop[i].offspring) #adicionando novos inds na populacao.
-
-    def AnimalsCarringCapacity(self):
+    def AnimalsCarringCapacity(self,popAni,k):
+        self.animalsPop = popAni
+        self.carringCapacity = k
+        self.animalsPop = self.animalsPop[:self.carringCapacity]
+        return self.animalsPop
+        
         rd.shuffle(self.population)
-        if len([x for x in self.population if x.group == 'A']) > self.carringCapacity:
-            self.difference = len([x for x in self.population if x.group == 'A']) - self.carringCapacity
-            for i in range(self.difference):
-                [x for x in self.population if (x.group == 'A') and (x.age == 0)][0].statusLife = 0
-        self.population = [x for x in self.population if x.statusLife == 1]
+        self.population = self.population[:self.carringCapacity]
+        # if len([x for x in self.population if x.group == 'A']) > self.carringCapacity:
+        #     self.difference = len([x for x in self.population if x.group == 'A']) - self.carringCapacity
+        #     for i in range(self.difference):
+        #         [x for x in self.population if (x.group == 'A') and (x.age == 0)][0].statusLife = 0
+        # self.population = [x for x in self.population if x.statusLife == 1]
                 
     def PlantsCarringCapacity(self):
         rd.shuffle(self.population)
@@ -195,20 +175,28 @@ class nuismerModel:
         self.theta = theta
         self.time = time
         self.modelObject = environment(self.N,self.Sanimal,self.Splants,self.offspring,self.alpha,self.gamma,self.theta,carringCapacity)
-        self.modelObject.criatePop()
+#        self.modelObject.criatePop()
             
     def run(self):
         self.modelObject.updateAbundancesData()
         self.modelObject.updataFenData()
+        self.popAnimals = modelObject.criatePopAnimal()
+        self.popPlants = modelObject.criatePopPlants()
         for t in range(self.time):
-            self.modelObject.plantsReproduction()
-            self.modelObject.animalReproduction()
-            self.modelObject.death()
-            self.modelObject.PlantsCarringCapacity()
-            self.modelObject.AnimalsCarringCapacity()
-            self.modelObject.updateAge()
-            self.modelObject.updateAbundancesData()
-            self.modelObject.updataFenData()
+            self.popPlants = self.modelObject.updateAge(self.popPlants)
+            ##CONTINUAR DAQUI: veriricar todos os passos e métodos desta funcao (run()) - comecei a mudar coisas la em cima.
+            self.modelObject.updateAge(self.popAnimals)
+            self.modelObject.plantsReproduction(self.popPlants,self.popAnimals)
+            self.modelObject.animalReproduction(self.popAnimals,self.popPlants)
+            
+            self.modelObject.death(self.popPlants)
+            self.modelObject.death(self.popAnimals)
+            self.modelObject.PlantsCarringCapacity(self.popPlants)
+            self.modelObject.AnimalsCarringCapacity(self.popAnimals)
+            self.modelObject.updateAbundancesData(self.popPlants)
+            self.modelObject.updateAbundancesData(self.popAnimals)
+            self.modelObject.updataFenData(popPlants)
+            self.modelObject.updataFenData(popAnimals)
         self.outputAnimalPop = self.modelObject.abundanceDataAnimal
         self.outputPlantsPop = self.modelObject.abundanceDataPlants
         self.outputAnimalFen = self.modelObject.animalFenData
