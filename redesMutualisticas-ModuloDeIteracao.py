@@ -1,6 +1,7 @@
-mymodel = nuismerModel(30,3,3,2,300,0.1,0.1,2,50)
+mymodel = nuismerModel(10,1,1,3,20,0.05,0.05,2,3)
 mymodel.run()
 
-pl.plot(mymodel.outputPlantsFen)
+pl.plot(mymodel.outputAnimalPop)
+pl.plot(mymodel.outputPlantsPop)
 #pl.plot(mymodel.outputAnimalFen)
 pl.show()
