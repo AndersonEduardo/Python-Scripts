@@ -63,7 +63,7 @@ class environment(object):
 
                         if self.indFitness > np.random.uniform():
                             for i_Offsp in range(self.animalsPop[i][j].offspring): #add prole recursivamente para haver variabilidade em Fen.
-                                self.animalsPop[i].extend([organisms('A',self.animalsPop[i][j].sp,self.animalsPop[i][j].fen+np.random.normal(0,self.theta),self.animalsPop[i][j].offspring,0)]) #adicionando novos inds na populacao.
+                                self.animalsPop[i].extend([organisms('A',self.animalsPop[i][j].sp,self.animalsPop[i][j].fen+np.random.normal(0,2),self.animalsPop[i][j].offspring,0)]) #adicionando novos inds na populacao.
         return self.animalsPop, self.interactionMatrix
 
     def plantsReproduction(self,popPlan,popAni,nSp,intMat): #reproducao assexuada (depende apenas da interacao)
@@ -89,7 +89,7 @@ class environment(object):
 
                         if self.indFitness > np.random.uniform():
                             for i_Offsp in range(self.plantsPop[i][j].offspring): #add prole recursivamente para haver variabilidade em Fen.
-                                self.plantsPop[i].extend([organisms('P',self.plantsPop[i][j].sp,self.plantsPop[i][j].fen+np.random.normal(0,self.theta),self.offspring,0)]) #adicionando novos inds na populacao.
+                                self.plantsPop[i].extend([organisms('P',self.plantsPop[i][j].sp,self.plantsPop[i][j].fen+np.random.normal(0,2),self.offspring,0)]) #adicionando novos inds na populacao.
         return self.plantsPop, self.interactionMatrix
 
     def carringCapacityFunction(self,pop,nSp,k):
@@ -235,7 +235,7 @@ class nuismerModel:
             self.fenAnimalsSD_t.extend([self.fenAnimalsCalc[1]])
             #apenas barra de progresso...
             percent = float(t+1) / self.time
-            hashes = '||' * int(round(percent * 50))
+            hashes = '#' * int(round(percent * 50))
             spaces = '-' * (50 - len(hashes))
             sys.stdout.write("\rPercent: [{0}] {1}%".format(hashes + spaces, int(round(percent * 100))))
             sys.stdout.flush()

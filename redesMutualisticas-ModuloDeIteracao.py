@@ -13,7 +13,7 @@ gamma = [0.01,0.5,0.9]
 
 for i in alpha:
     for j in gamma:
-        mymodel = nuismerModel(50,10,10,3,200,0.9,0.07,2,50) #paratriza o modelo
+        mymodel = nuismerModel(50,10,10,3,200,i,j,5,50) #paratriza o modelo
         mymodel.run() #roda
         #salvando arquivos
         pd.DataFrame(mymodel.outputInteractionMatrix).to_csv('intMat'+str(i)+str(j)+'.csv') #salva matriz de interacao como arquivo .csv
