@@ -8,27 +8,36 @@ print mensagem.center(100)
 ###########
 ###########
 
-alpha = [0.01,0.5,0.9]
-gamma = [0.01,0.5,0.9]
+N = 500
+Sanimal = 6
+Splants = 6
+offspring = 5
+carringCapacity = 500
+alphaVector = [0.5]#[0.01,0.5,0.9]
+gammaVector = [0.5]#[0.01,0.5,0.9]
+thetaAnimal = range(Sanimal) #[rd.randint(10+Sanimal,50+Sanimal) for i in range(Sanimal)]
+thetaPlants = range(Splants) #[rd.randint(10+Splants,50+Splants) for i in range(Splants)]
+timeLen = 40
 
-for i in alpha:
-    for j in gamma:
-        mymodel = nuismerModel(50,10,10,3,200,i,j,5,50) #paratriza o modelo
+for alpha in alphaVector:
+    for gamma in gammaVector:
+        mymodel = nuismerModel(N,Sanimal,Splants,offspring,carringCapacity,alpha,gamma,thetaAnimal,thetaPlants,timeLen) #paratriza o modelo
         mymodel.run() #roda
         #salvando arquivos
-        pd.DataFrame(mymodel.outputInteractionMatrix).to_csv('intMat'+str(i)+str(j)+'.csv') #salva matriz de interacao como arquivo .csv
-        pd.DataFrame(mymodel.outputPlantsPop).to_csv('plaPop'+str(i)+str(j)+'.csv') #salva abundancia de plantas como arquivo .csv
-        pd.DataFrame(mymodel.outputAnimalPop).to_csv('aniPop'+str(i)+str(j)+'.csv') #salva abundancia de animais como arquivo .csv
-        pd.DataFrame(mymodel.outputAnimalFenMean).to_csv('aniFenMean'+str(i)+str(j)+'.csv') #salva fenotipo medio das sps animais como .csv
-        pd.DataFrame(mymodel.outputAnimalFenSD).to_csv('aniFenSD'+str(i)+str(j)+'.csv') #salva SD do fenotipo de animais como arquivo .csv
-        pd.DataFrame(mymodel.outputPlantsFenMean).to_csv('plaFenMean'+str(i)+str(j)+'.csv') #salva fenotipo medio das sps plantas como .csv
-        pd.DataFrame(mymodel.outputPlantsFenMean).to_csv('plaFenSD'+str(i)+str(j)+'.csv') #salva SD do fenotipo de plantas como arquivo .csv
+        pd.DataFrame(mymodel.outputInteractionMatrix).to_csv('intMat'+str(alpha)+str(gamma)+'.csv') #salva matriz de interacao como arquivo .csv
+        # pd.DataFrame(mymodel.outputPlantsPop).to_csv('plaPop'+str(alpha)+str(gamma)+'.csv') #salva abundancia de plantas como arquivo .csv
+        # pd.DataFrame(mymodel.outputAnimalPop).to_csv('aniPop'+str(alpha)+str(gamma)+'.csv') #salva abundancia de animais como arquivo .csv
+        # pd.DataFrame(mymodel.outputAnimalFenMean).to_csv('aniFenMean'+str(alpha)+str(gamma)+'.csv') #salva fenotipo medio das sps animais como .csv
+        # pd.DataFrame(mymodel.outputAnimalFenSD).to_csv('aniFenSD'+str(alpha)+str(gamma)+'.csv') #salva SD do fenotipo de animais como arquivo .csv
+        # pd.DataFrame(mymodel.outputPlantsFenMean).to_csv('plaFenMean'+str(alpha)+str(gamma)+'.csv') #salva fenotipo medio das sps plantas como .csv
+        # pd.DataFrame(mymodel.outputPlantsFenMean).to_csv('plaFenSD'+str(alpha)+str(gamma)+'.csv') #salva SD do fenotipo de plantas como arquivo .cs
 
-
-#pl.plot(mymodel.outputAnimalPop)
-#pl.plot(mymodel.outputPlantsPop)
+print mymodel.outputInteractionMatrix        
+pl.plot(mymodel.outputAnimalPop)
+pl.plot(mymodel.outputPlantsPop)
 #pl.plot(mymodel.outputAnimalFenMean)
-#pl.show()
+#pl.plot(mymodel.outputPlantsFenMean)
+pl.show()
 
 ###########
 ###########
