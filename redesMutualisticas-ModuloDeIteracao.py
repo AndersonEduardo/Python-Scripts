@@ -1,6 +1,8 @@
 import os 
 os.chdir('/home/anderson/Documentos/Projetos/Redes Mutualisticas e Coevolucao') #MTA ATENCAO AQUI: diretorio de trabalho!
+import redesMutualisticas as nui #'redesMutualisticas.py' deve estar no dir de trabalho
 import time
+import pandas as pd
 
 start_time = time.time()
 mensagem = '||| Runing Nuismer Model |||'
@@ -22,7 +24,7 @@ timeLen = 100 #tempo (ou numero de geracoes)
 
 for alpha in alphaVector:
     for gamma in gammaVector:
-        mymodel = nuismerModel(N,Sanimal,Splants,offspring,carringCapacity,alpha,gamma,thetaAnimal,thetaPlants,eta,timeLen) #paratriza o modelo
+        mymodel = nui.nuismerModel(N,Sanimal,Splants,offspring,carringCapacity,alpha,gamma,thetaAnimal,thetaPlants,eta,timeLen) #paratriza o modelo
         mymodel.run() #roda
         #salvando arquivos
         pd.DataFrame(mymodel.outputInteractionMatrix).to_csv('intMat'+str(alpha)+str(gamma)+'.csv') #matriz de interacao .csv
