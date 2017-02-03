@@ -15,15 +15,6 @@ class organisms(object):
 
 class environment(object):
     def __init__(self,alpha,gamma,thetaAnimal,thetaPlants,carringCapacity):
-#        self.population = [] #array de populacoes
-        # self.abundancePlants = [] #variavel para armazenar info dos tamanhos populacionais em cada passo de tempo
-        # self.abundanceAnimal = [] #variavel para armazenar info dos tamanhos populacionais em cada passo de tempo
-        # self.plantsFenDataList = []
-        # self.animalFenDataList = []
-#        self.numInd = N #definindo o numero de individuos no ambiente
-        # self.numSpAn = Sanimal #definindo o numero de especies animais
-        # self.numSpPlan = Splants #definindo o numero de especies plantas
-#        self.offspring = offs 
         self.alpha = alpha
         self.gamma = gamma
         self.thetaAnimal = thetaAnimal
@@ -43,78 +34,48 @@ class environment(object):
         for i in range(self.numSp): #loop sobre numero de especies
             self.sp_i = []
             for j in range(self.numInd): #loop sobre o numero de individuos
-                self.sp_i.append(organisms(self.group,i,self.theta[i] + np.random.uniform(-5,5),self.offspring,0))
+                self.sp_i.append(organisms(self.group,i,abs(self.theta[i] + np.random.uniform(-1,1)),self.offspring,0))
             self.popNew.append(self.sp_i) #add o novo organismo no final do array de organismos
         return self.popNew
 
-    def animalReproduction(self,popAni,popPlan,nSp,thetaAni,thetaPla,intMat): #reproducao assexuada (depende apenas da interacao)
+    def reproduction(self,popAni,popPlan,nSp,thetaAni,thetaPla,eta,intMat): #reproducao assexuada (depende apenas da interacao)
         self.animalsPop = popAni
         self.plantsPop = popPlan
         self.numSp = nSp
         self.thetaAnimal = thetaAni
         self.thetaPlants = thetaPla
+        self.eta = eta
         self.interactionMatrix = intMat
         if len(np.concatenate(self.plantsPop)) == 0:
-            print "\n !!!The network collapsed!!! \n"
+            print "\n !!!The network collapsed!!! \n" 
         for i in range(self.numSp):
             for j in range(len(self.animalsPop[i])):
                 if (self.animalsPop[i][j].age > 0):
-                    self.spPlan = rd.randint(0,len(self.plantsPop)-1)
-                    self.indPlan = rd.randint(0,len(self.plantsPop[self.spPlan])-1)
-                    self.intPlan = self.plantsPop[self.spPlan][self.indPlan] #planta (individuo) visitada pelo organismo animal atual
-                    #obtendo valor da funcao para prob. de interacao
-                    self.Za = self.animalsPop[i][j].fen
-#                    self.intPlan = np.concatenate(self.plantsPop)[rd.randint(0,len(np.concatenate(self.plantsPop))-1)] 
-                    self.Zp = self.intPlan.fen
-                    self.indIntProb = self.interaction(self.Za,self.Zp,self.alpha)
-
-                    if self.indIntProb > np.random.uniform():
-                        # self.indFitness = self.fitness(self.animalsPop[i][j].fen,self.gamma,self.theta)
-                        self.interactionMatrix[self.animalsPop[i][j].sp][self.intPlan.sp] += 1 #atualizando a matriz de interacao
+                    self.visits = 0 #contador de visitas
+                    for k in range(self.eta):
+                        self.spPlan = rd.randint(0,len(self.plantsPop)-1)
+                        self.indPlan = rd.randint(0,len(self.plantsPop[self.spPlan])-1)
+                        self.intPlan = self.plantsPop[self.spPlan][self.indPlan] #planta (individuo) visitada pelo organismo animal atual
+                        #obtendo valor da funcao para prob. de interacao
+                        self.Za = self.animalsPop[i][j].fen
+                        self.Zp = self.intPlan.fen
+                        self.indIntProb = self.interaction(self.Za,self.Zp,self.alpha)
+                        if self.indIntProb > np.random.uniform():
+                            self.interactionMatrix[self.animalsPop[i][j].sp][self.intPlan.sp] += 1 #atualizando a matriz de interacao
+                            self.visits += 1
+                            #fitness da planta
+                            self.indPlaFitness = self.fitness(self.intPlan.fen,self.gamma,self.thetaPlants[self.spPlan])
+                            #reproducao plantas
+                            if self.indPlaFitness > np.random.uniform():
+                                for i_Offsp in range(self.intPlan.offspring): #add prole recursivamente para haver variabilidade em Fen.
+                                    self.plantsPop[self.spPlan].extend([organisms('P',self.intPlan.sp,abs(np.random.normal(self.intPlan.fen)),self.intPlan.offspring,0)]) #adicionando novos inds na populacao.
+                    if self.visits > 0:
                         self.indAniFitness = self.fitness(self.animalsPop[i][j].fen,self.gamma,self.thetaAnimal[i])
-                        self.indPlaFitness = self.fitness(self.intPlan.fen,self.gamma,self.thetaPlants[self.spPlan])
                         #reproducao animal
                         if self.indAniFitness > np.random.uniform():
                             for i_Offsp in range(self.animalsPop[i][j].offspring): #add prole recursivamente para haver variabilidade em Fen.
-                                self.animalsPop[i].extend([organisms('A',self.animalsPop[i][j].sp,self.animalsPop[i][j].fen+np.random.normal(0,2),self.animalsPop[i][j].offspring,0)]) #adicionando novos inds na populacao.
-
-                        #reproducao plantas
-                        if self.indPlaFitness > np.random.uniform():
-                            for i_Offsp in range(self.intPlan.offspring): #add prole recursivamente para haver variabilidade em Fen.
-                                self.plantsPop[self.spPlan].extend([organisms('P',self.intPlan.sp,self.intPlan.fen+np.random.normal(0,2),self.intPlan.offspring,0)]) #adicionando novos inds na populacao.
-                                
-                        # if self.indFitness > np.random.uniform():
-                        #     for i_Offsp in range(self.animalsPop[i][j].offspring): #add prole recursivamente para haver variabilidade em Fen.
-                        #         self.animalsPop[i].extend([organisms('A',self.animalsPop[i][j].sp,self.animalsPop[i][j].fen+np.random.normal(0,2),self.animalsPop[i][j].offspring,0)]) #adicionando novos inds na populacao.
-                        
-                        
-        return self.animalsPop,self.plantsPop, self.interactionMatrix
-    
-#     def plantsReproduction(self,popPlan,popAni,nSp,intMat): #reproducao assexuada (depende apenas da interacao)
-#         self.plantsPop = popPlan
-#         self.animalsPop = popAni
-#         self.numSp = nSp
-#         self.interactionMatrix = intMat
-#         if len(np.concatenate(self.animalsPop)) == 0:
-#             print "\n !!!The network collapsed!!! \n"
-#         for i in range(self.numSp):
-#             for j in range(len(self.plantsPop[i])):
-#                 if (self.plantsPop[i][j].age > 0):
-#                     #obtendo valor da funcao para prob. de interacao
-# #                    self.Za = self.animalsPop[rd.randint(0,len(self.animalsPop)-1)][].fen
-#                     self.intPar = np.concatenate(self.animalsPop)[rd.randint(0,len(np.concatenate(self.animalsPop))-1)]
-#                     self.Za = self.intPar.fen
-#                     self.Zp = self.plantsPop[i][j].fen
-#                     self.indIntProb = self.interaction(self.Za,self.Zp,self.alpha) 
-
-#                     if self.indIntProb > np.random.uniform():
-#                         self.indFitness = self.fitness(self.plantsPop[i][j].fen,self.gamma,self.theta)
-#                         self.interactionMatrix[self.intPar.sp][self.plantsPop[i][j].sp] += 1 #atualizando a matriz de interacao
-
-#                         if self.indFitness > np.random.uniform():
-#                             for i_Offsp in range(self.plantsPop[i][j].offspring): #add prole recursivamente para haver variabilidade em Fen.
-#                                 self.plantsPop[i].extend([organisms('P',self.plantsPop[i][j].sp,self.plantsPop[i][j].fen+np.random.normal(0,2),self.offspring,0)]) #adicionando novos inds na populacao.
-#         return self.plantsPop, self.interactionMatrix
+                                self.animalsPop[i].extend([organisms('A',self.animalsPop[i][j].sp,abs(np.random.normal(self.animalsPop[i][j].fen)),self.animalsPop[i][j].offspring,0)]) #adicionando novos inds na populacao.
+        return self.animalsPop,self.plantsPop, self.interactionMatrix    
 
     def carringCapacityFunction(self,pop,nSp,k):
         self.pop = pop
@@ -122,13 +83,8 @@ class environment(object):
         self.carringCapacity = k
         self.updatedPop = []
         self.totalPop = np.concatenate(self.pop)
-
         for i in range(self.numSp):
             self.updatedPop.append(self.pop[i][:self.carringCapacity])
-        # rd.shuffle(self.totalPop)
-        # self.totalPop = self.totalPop[:self.carringCapacity]
-        # for i in range(self.numSp):
-        #     self.updatedPop.append([x for x in self.totalPop if x.sp == i])
         return self.updatedPop
                 
     def interaction(self,Za,Zp,alpha): #funcao para prob. de interacao (Nuismer et al. 201..)
@@ -143,10 +99,8 @@ class environment(object):
         self.pop = pop
         self.numSp = nSp
         for i in range(self.numSp):
-#            print [x.sp for x in np.concatenate(self.pop)], i
             for orgnsm in self.pop[i]:
                 orgnsm.age+=1
-#            print [x.sp for x in np.concatenate(self.pop)], i
         return self.pop 
 
     def death(self,pop,nSp):
@@ -156,9 +110,7 @@ class environment(object):
         for i in range(self.numSp):
             for orgnsm in self.pop[i]:
                 if orgnsm.age >=1:
-#                    print orgnsm.age,orgnsm.statusLife
                     orgnsm.statusLife = 0
-#                    print orgnsm.age,orgnsm.statusLife
             self.updatedPop.append([x for x in self.pop[i] if x.statusLife == 1])
         return self.updatedPop
     
@@ -167,11 +119,7 @@ class environment(object):
         self.numSp = nSp
         self.abundance = []
         for i in range(self.numSp): #loop sobre cada especie animal
-#            self.counting = len(pop[i]) #len([x for x in self.pop if (x.sp == i)]) #contando quantos existem
             self.abundance.append(len(self.pop[i])) #registrando na variavel 'abundanciaAnimal'
-#        self.abundanceArray = np.array(self.abundance) #transformando em 'array' (para o 'split')
-#        self.abundanceSplit = np.split(self.abundanceArray,len(self.abundance)/(self.numSp)) #dividindo o array
-#        self.abundanceData = pd.DataFrame(self.abundanceSplit) #transformando em 'array' em 'dataframe'
         return self.abundance
 
     def updataFenData(self,pop,nSp):
@@ -187,7 +135,7 @@ class environment(object):
         return self.fenMean,self.fenSD
 
 class nuismerModel:
-    def __init__(self,N,Sanimal,Splants,offs,carringCapacity,alpha,gamma,thetaAni,thetaPla,time):        
+    def __init__(self,N,Sanimal,Splants,offs,carringCapacity,alpha,gamma,thetaAni,thetaPla,eta,time):        
         self.N = N
         self.Sanimal = Sanimal
         self.Splants = Splants
@@ -195,6 +143,7 @@ class nuismerModel:
         self.carringCapacity = carringCapacity
         self.alpha = alpha
         self.gamma = gamma
+        self.eta = eta
         self.thetaAnimal = thetaAni
         self.thetaPlants = thetaPla
         self.time = time
@@ -231,21 +180,13 @@ class nuismerModel:
             self.popPlants = self.modelObject.carringCapacityFunction(self.popPlants,self.Splants,self.carringCapacity)
             self.popAnimals = self.modelObject.carringCapacityFunction(self.popAnimals,self.Sanimal,self.carringCapacity)
             #reproducao
-#            print len(self.popAnimals[1]), len(self.popPlants[1])
-            self.animalRep_t =  self.modelObject.animalReproduction(self.popAnimals,self.popPlants,self.Sanimal,self.thetaAnimal,self.thetaPlants,self.interactionMatrix)
+            self.animalRep_t =  self.modelObject.reproduction(self.popAnimals,self.popPlants,self.Sanimal,self.thetaAnimal,self.thetaPlants,self.eta,self.interactionMatrix)
             self.popAnimals = self.animalRep_t[0]
             self.popPlants = self.animalRep_t[1]
- #           print len(self.popAnimals[1]),len(self.popPlants[1]) 
-            if t < int(0.5*self.time):
+            if t < int(0.8*self.time):
                 self.interactionMatrix = np.zeros([self.Sanimal,self.Splants])
             else:
                 self.interactionMatrix = self.animalRep_t[2]
-            # self.plantsRep_t = self.modelObject.plantsReproduction(self.popPlants,self.popAnimals,self.Splants,self.interactionMatrix)
-            # self.popPlants = self.plantsRep_t[0]
-            # if t < int(0.5*self.time):
-            #     self.interactionMatrix = np.zeros([self.Sanimal,self.Splants])
-            # else:
-            #     self.interactionMatrix = self.plantsRep_t[1]
             #morte
             self.popPlants =  self.modelObject.death(self.popPlants,self.Splants)
             self.popAnimals = self.modelObject.death(self.popAnimals,self.Sanimal)
