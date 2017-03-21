@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 #from pylab import *
-#from scipy.integrate import odeint
+from scipy.integrate import odeint
 
 def meurk4( f, x0, t ):
     n = len( t )
@@ -50,6 +50,7 @@ y0 = 20.0
 t = np.linspace( 0, 100, 1000 )
 
 result = meurk4( model, [x0,y0], t )
+#result = odeint( model, [x0,y0], t )
 print result
 
 plt.plot(t,result)
