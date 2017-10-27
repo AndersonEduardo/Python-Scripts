@@ -73,30 +73,39 @@ PCargs.MaxStepSize  = 1
 PCargs.MinStepSize  = 1E-5
 PCargs.StepSize     = 2E-2
 PCargs.LocBifPoints = 'all'                     # detect limit points / saddle-node bifurcations
-PCargs.verbosity    = 1
+PCargs.verbosity    = 2
 PCargs.SaveEigen    = True                     # to tell unstable from stable branches
 PC.newCurve(PCargs)
 PC['EQ1'].forward()
 #PC['EQ1'].backward()
-PC.display(['c','N'], stability=True, figure=3)        # stable and unstable branches as solid and dashed curves, resp.
+PC.display(['c','P'], stability=True, figure=3)        # stable and unstable branches as solid and dashed curves, resp.
 #pl.ylim(-10,10)
 pl.show()
 
+
+
+DS.set(ics =  {'N': 50,
+               'P': 0} )       # Close to one of the steady states -- pointSet['N'][-1] foi definido acima
+
+PC = dst.ContClass(DS)            # Set up continuation class
+
+PCargs              = dst.args()     # 'EP-C' stands for Equilibrium Point Curve. The branch will be labeled 'EQ1'.
 PCargs.name = 'EQ2'
-PCargs.type = 'LP-C'
-PCargs.initpoint = 'EQ1:BP1'
-PCargs.freepars = ['c','b']
+PCargs.type = 'EP-C'
+#PCargs.initpoint = 'EQ1:BP1'
+PCargs.freepars = ['c']
 PCargs.MaxNumPoints = 200                      # The following 3 parameters are set after trial-and-error
 PCargs.MaxStepSize  = 1E-1
 PCargs.MinStepSize  = 1E-5
 PCargs.StepSize     = 2E-2
-PCargs.LocBifPoints = 'CP'                     # detect limit points / saddle-node bifurcations
+PCargs.LocBifPoints = 'all'                     # detect limit points / saddle-node bifurcations
 PCargs.verbosity    = 1
 PCargs.SaveEigen    = True                     # to tell unstable from stable branches
 PC.newCurve(PCargs)
 PC['EQ2'].forward()
-PC['EQ2'].backward()
+#PC['EQ2'].backward()
 
 # Plot bifurcation diagram
-PC.display(('b','c'), stability=True, figure=4)
+PC.display(['c','P'], stability=True, figure=4)
+pl.ylim([-10,10])
 pl.show()
