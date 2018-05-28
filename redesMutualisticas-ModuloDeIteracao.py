@@ -1,5 +1,5 @@
 import os 
-os.chdir('/home/anderson/Documentos/Projetos/Redes Mutualisticas e Coevolucao') #MTA ATENCAO AQUI: diretorio de trabalho!
+os.chdir( "/home/anderson/Python-Scripts" ) #MTA ATENCAO AQUI: diretorio de trabalho!
 import redesMutualisticas as nui #'redesMutualisticas.py' deve estar no dir de trabalho
 import time
 import pandas as pd
