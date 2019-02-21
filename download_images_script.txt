@@ -1,0 +1,36 @@
+## tutorial para baixar imagens do google usando JavaScript
+## Fonte 1: https://msollami.com/code/2017/1/3/google-image-scraper
+## Fonte 2: https://www.pyimagesearch.com/2017/12/04/how-to-create-a-deep-learning-dataset-using-google-images/
+
+#1 - The first step in using Google Images to gather training data for our Convolutional Neural Network is to head to Google Images and enter a query.
+
+#2 - The next step is to use a tiny bit of JavaScript to gather the image URLs (which we can then download using Python later in this tutorial). Fire up the JavaScript console (I’ll assume you are using the Chrome web browser, but you can use Firefox as well) by clicking View => Developer => JavaScript Console.
+
+#3 - This will enable you to execute JavaScript in a REPL-like manner. The next step is to start scrolling! Keep scrolling until you have found all relevant images to your query. From there, we need to grab the URLs for each of these images. Switch back to the JavaScript console and then copy and paste the JavaScript code into the Console.
+
+#3 pull down jquery into the JavaScript console
+
+var script = document.createElement('script');
+script.src = "https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js";
+document.getElementsByTagName('head')[0].appendChild(script);
+
+#4 - grab the URLs
+
+var urls = $('.rg_di .rg_meta').map(function() { return JSON.parse($(this).text()).ou; });
+
+#5 - write the URls to file (one per line)
+
+var textToSave = urls.toArray().join('\n');
+var hiddenElement = document.createElement('a');
+hiddenElement.href = 'data:attachment/text,' + encodeURI(textToSave);
+hiddenElement.target = '_blank';
+hiddenElement.download = 'urls.txt';
+hiddenElement.click();
+
+#6 - dowload images with Python: instalar o pacote requests (pip install requests). Depois, usar o arquivo 'download_images.py' para baixar as imagens da URL. Assim: $ python download_images.py --urls urls.txt --output pasta_do_projeto/output
+
+
+
+
+
+
