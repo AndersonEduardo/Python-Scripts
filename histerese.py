@@ -5,7 +5,7 @@ from scipy.integrate import odeint
 def meueuler( f, x0, t, par ):
     n = len(t)
     x = np.array([x0] * n)
-    for i in xrange(n - 1):
+    for i in range(n - 1):
         x[i+1] = x[i] + (t[i+1] - t[i]) * f(x[i], t[i], par)
 
     return x
