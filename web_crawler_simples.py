@@ -61,8 +61,11 @@ class PursuedObjects:
                 '\n --------------------------------')
 
 
-crawler = Crawler('https://itunes.apple.com/br/app/candy-crush-saga/id553834731?mt=8', 1)
-crawler.crawl()
+## crawleando a pagina do candy crush saga para obter os aplicativos (jogos) do mesmo desenvolvedor ##
 
+crawler = Crawler(starting_url = 'https://itunes.apple.com/br/app/candy-crush-saga/id553834731?mt=8', depth = 1) #inicializando o crawler
+crawler.crawl() #executando o processo de crawler
+
+#visualizando resultados obtidos
 for object in crawler.pursued_objects:
     print(object)
