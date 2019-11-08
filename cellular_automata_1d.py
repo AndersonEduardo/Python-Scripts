@@ -1,3 +1,18 @@
+#coding utf-8#
+
+## AUTÔMATO CELULAR DE 1 DIMENSÃO
+# Requerimentos:
+# -Python 3.6 ou posterior
+# -módulo numpy
+# -módulo matplotlib
+#
+# Como rodar:
+# -abra um terminal (e.g., prompt de comandos do Windows)
+# -navegue até o diretório em que está este arquivo
+# -execute: python3 cellular_automata_1d.py
+# :-)
+
+
 import numpy as np
 from matplotlib import pyplot as plt
 
