@@ -1,3 +1,3 @@
-# Theoretical-Biology
+# Applied Math
 
-Theoretical biologists analyzes biological systems using mathematical and computational tools. Here I am providing some os my "experimental codes", which I implemented while studying biolgical theory.
+I'm interested in analyzing real world systems using mathematical and computational tools. Here I am providing some os my "experimental codes", which I implemented while studying theoretical stuff.
